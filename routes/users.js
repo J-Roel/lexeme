@@ -1,9 +1,69 @@
 var express = require('express');
 var router = express.Router();
 var knex = require('../db/knex');
+var jwt = require('jsonwebtoken');
 
-var passport = require('passport');
 
+
+
+
+//---------------------------------
+//USER AUTHENTICATION
+//---------------------------------
+
+router.post('/authenticate', function (req, res) {
+  //TODO validate req.body.username and req.body.password
+  //if is invalid, return 401
+
+  console.log(req.body);
+
+  if (!(req.body.username === 'john' && req.body.password === 'password')) {
+
+	    console.log('Sending 401 to Client');
+	    res.send(401, 'Wrong user or password');
+	    return;
+
+
+  	} else {
+
+
+  		console.log('Username and password correct');
+
+		var profile = {
+			first_name: 'John',
+		    last_name: 'Doe',
+		    email: 'john@doe.com',
+		    id: 123
+		};
+
+		// We are sending the profile inside the token
+		var token = jwt.sign(profile, process.env.TOKEN_SECRET, { expiresInMinutes: 60*5 });
+
+		res.json({ token: token });
+	}
+});
+
+
+router.get('/restricted', function (req, res) {
+  	console.log('IN RESTRICTED');
+
+
+	console.log('user ' + req.user.username + ' is calling /restricted');
+
+	res.json({
+		name: 'foo'
+	});
+
+
+});
+
+
+
+
+
+//---------------------------------
+//USER CRUD
+//---------------------------------
 
 //GET ALL USERS
 router.get('/', function(req, res, next) {
@@ -19,7 +79,7 @@ router.get('/', function(req, res, next) {
 
 
 //GET INDIVIDUAL USER
-router.get('/:id', passport.authenticate('jwt', { session: false}), function(req,res,next){
+router.get('/:id', function(req,res,next){
 
 
 	knex('users').select().where('id', req.params.id)
@@ -35,7 +95,7 @@ router.get('/:id', passport.authenticate('jwt', { session: false}), function(req
 
 
 //CREATE USER
-router.post('/', passport.authenticate('jwt', { session: false}), function(req,res,next){
+router.post('/', function(req,res,next){
 
 	console.log("USER: ", req.user);
 
@@ -147,16 +207,6 @@ router.delete('/:id', function(req,res,next){
 	});
 
 });
-
-
-
-
-
-
-
-
-
-
 
 
 
