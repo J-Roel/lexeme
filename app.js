@@ -27,7 +27,7 @@ var app = express();
 app.use(cors());
 
 // We are going to protect /api routes with JWT
-app.use('/users/restricted', expressJwt(
+app.use('/users', expressJwt(
   {
     secret: process.env.TOKEN_SECRET
   }));

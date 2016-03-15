@@ -3,6 +3,7 @@ var router = express.Router();
 var knex = require('../db/knex');
 var jwt = require('jsonwebtoken');
 
+var bcrypt = require('bcrypt');
 
 
 
@@ -12,36 +13,59 @@ var jwt = require('jsonwebtoken');
 //---------------------------------
 
 router.post('/authenticate', function (req, res) {
-  //TODO validate req.body.username and req.body.password
-  //if is invalid, return 401
-
-  console.log(req.body);
-
-  if (!(req.body.username === 'john' && req.body.password === 'password')) {
-
-	    console.log('Sending 401 to Client');
-	    res.send(401, 'Wrong user or password');
-	    return;
 
 
-  	} else {
+	//Bcrypt to take care of password
+	password = req.body.password;
+	username = req.body.username;
 
 
-  		console.log('Username and password correct');
+	if(req.body.username){
+		//Validate req.body.username and password against database
+		knex('users').select().where('username', username)
+		.then(function(data){
 
-		var profile = {
-			first_name: 'John',
-		    last_name: 'Doe',
-		    email: 'john@doe.com',
-		    id: 123
-		};
 
-		// We are sending the profile inside the token
-		var token = jwt.sign(profile, process.env.TOKEN_SECRET, { expiresInMinutes: 60*5 });
+			// Load hash from your password DB.
+			bcrypt.compare(password, data[0].password, function(err, resolve) {
+		    	
+		  		if(resolve){
+					var profile = {
+						id: data.id,
+						username: data.username,
+						first_name: data.first_name,
+					    last_name: data.last_name,
+					    email: data.email,
+					    image_url: data.image_url,
+					    company_id: data.company_id,
+					    role: data.role,
+					    auth_role: data.auth_role
+					};
 
-		res.json({ token: token });
-	}
-});
+					// We are sending the profile inside the token
+					var token = jwt.sign(profile, process.env.TOKEN_SECRET, { expiresInMinutes: 60*5 });
+
+					res.json({ token: token });
+		
+				}//End resolve
+				else{
+					res.send(401, 'err')
+				}
+			});//end bcrypt
+
+		
+		}).catch(function(err){
+			
+			console.log('Sending 401 to Client');
+		    res.send(401, 'Username was not found');
+			next();
+
+		});//END PROMISE
+	} else { res.send(401, 'Username was not recieved'); }
+
+});//END AUTHENTICATE
+
+
 
 
 router.get('/restricted', function (req, res) {
@@ -78,9 +102,8 @@ router.get('/', function(req, res, next) {
 });
 
 
-//GET INDIVIDUAL USER
+//GET INDIVIDUAL USER BY ID
 router.get('/:id', function(req,res,next){
-
 
 	knex('users').select().where('id', req.params.id)
 	.then(function(data){
@@ -97,7 +120,8 @@ router.get('/:id', function(req,res,next){
 //CREATE USER
 router.post('/', function(req,res,next){
 
-	console.log("USER: ", req.user);
+
+	console.log("USER: ", req.body);
 
     //id
 	var username = req.body.username;
@@ -110,31 +134,36 @@ router.post('/', function(req,res,next){
 	var role = req.body.role;
 	var auth_role = req.body.auth_role;
 
-	//Validate on server side
-
-
-	//Insert into database w/promise
-	knex('users').insert({
-
-		username : username,
-		password : password,
-		first_name : first_name,
-		last_name : last_name,
-		email : email,
-		image_url : image_url,
-		company_id: company_id,
-		role : role,
-		auth_role: auth_role
 	
-	}).then(function(countInserted){
+	//Setup password
+	var passwordH;
 
-		res.send('Added new entry: ', countInserted);
-	
-	}).catch(function(err){
-	
-		res.send('There was an error posting to the server.');
-	
-	});
+	bcrypt.hash(password, 10, function(err, hash) {
+
+			//Insert into database w/promise
+			knex('users').insert({
+
+				username : username,
+				password : hash,
+				first_name : first_name,
+				last_name : last_name,
+				email : email,
+				image_url : image_url,
+				company_id: company_id,
+				role : role,
+				auth_role: auth_role
+			
+			}).then(function(countInserted){
+
+				res.send('Added new entry: ', countInserted);
+			
+			}).catch(function(err){
+			
+				res.send('There was an error posting to the server.');
+			
+			});//End Promise
+
+	});//End Hash
 
 
 });
