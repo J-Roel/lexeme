@@ -31,18 +31,18 @@ router.post('/', function (req, res) {
 		    	
 		  		if(resolve){
 					var profile = {
-						id: data[0].id,
 						username: data[0].username,
+						first_name: data[0].first_name,
+						last_name: data[0].last_name,
+						email: data[0].email,
+					    image_url: data[0].image_url,
 					    auth_role: data[0].auth_role
 					};
 
 					// We are sending the profile inside the token
 					var token = jwt.sign(profile, process.env.TOKEN_SECRET, { expiresInMinutes: 60*5 });
 
-					console.log("SENDING DATA : ", data, token);
-
-
-					res.json({ token: token });
+					res.json({ token: token, user : profile });
 		
 				}//End resolve
 				else{
