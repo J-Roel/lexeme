@@ -11,11 +11,11 @@ var jwt = require('jsonwebtoken');
 
 
 //Require all of our routes
-var routes = require('./routes/index');
+//var routes = require('./routes/index');
 var users = require('./routes/users');
 var companies = require('./routes/companies');
 var projects = require('./routes/projects');
-//var auth = require('./routes/auth');
+var auth = require('./routes/auth');
 
 var cors = require('cors');
 
@@ -27,10 +27,10 @@ var app = express();
 app.use(cors());
 
 // We are going to protect /api routes with JWT
-app.use('/users', expressJwt(
+app.use('/', expressJwt(
   {
     secret: process.env.TOKEN_SECRET
-  }));
+  }).unless({path: ['/auth']}));
 
 
 
@@ -48,10 +48,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/', routes);
+//app.use('/', routes);
 app.use('/users', users);
 app.use('/companies', companies);
 app.use('/projects', projects);
+app.use('/auth', auth);
+
+
 
 
 // catch 404 and forward to error handler

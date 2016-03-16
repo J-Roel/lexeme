@@ -1,42 +1,87 @@
 var express = require('express');
 var router = express.Router();
 var knex = require('../db/knex');
-
-
 var jwt = require('jsonwebtoken');
 
-
-
-router.post('/authenticate', function (req, res) {
-  //TODO validate req.body.username and req.body.password
-  //if is invalid, return 401
-  if (!(req.body.username === 'John' && req.body.password === 'password')) {
-    res.send(401, 'Wrong user or password');
-    return;
-  }
+var bcrypt = require('bcrypt');
 
 
 
-  var profile = {
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john@doe.com',
-    id: 123
-  };
+//---------------------------------
+//USER AUTHENTICATION
+//---------------------------------
 
-  // We are sending the profile inside the token
-  var token = jwt.sign(profile, secret, { expiresInMinutes: 60*5 });
+router.post('/', function (req, res) {
+	console.log("AUTHENTICATING USER");
 
-  res.json({ token: token });
-});
+	console.log(req.body);
+	
+	password = req.body.password;
+	username = req.body.username;
+
+
+	if(req.body.username){
+		//Validate req.body.username and password against database
+		knex('users').select().where('username', username)
+		.then(function(data){
+
+
+			// Load hash from your password DB.
+			bcrypt.compare(password, data[0].password, function(err, resolve) {
+		    	
+		  		if(resolve){
+					var profile = {
+						id: data[0].id,
+						username: data[0].username,
+					    auth_role: data[0].auth_role
+					};
+
+					// We are sending the profile inside the token
+					var token = jwt.sign(profile, process.env.TOKEN_SECRET, { expiresInMinutes: 60*5 });
+
+					console.log("SENDING DATA : ", data, token);
+
+
+					res.json({ token: token });
+		
+				}//End resolve
+				else{
+					res.send(401, 'err')
+				}
+			});//end bcrypt
+
+		
+		}).catch(function(err){
+			
+			console.log('Sending 401 to Client');
+		    res.send(401, 'Username was not found');
+			next();
+
+		});//END PROMISE
+	} else { res.send(401, 'Username was not recieved'); }
+
+});//END AUTHENTICATE
+
+
 
 
 router.get('/restricted', function (req, res) {
-  console.log('user ' + req.user.email + ' is calling /restricted');
-  res.json({
-    name: 'foo'
-  });
+  	console.log('IN RESTRICTED');
+
+
+	console.log('user ' + req.user.username + ' is calling /restricted');
+
+	res.json({
+		name: 'foo'
+	});
+
+
 });
+
+
+
+
+
 
 
 module.exports = router;
@@ -51,4 +96,4 @@ module.exports = router;
 
 
 
-//END OF FILE
+/* END OF FILE */
