@@ -30,7 +30,7 @@ app.use(cors());
 app.use('/', expressJwt(
   {
     secret: process.env.TOKEN_SECRET
-  }).unless({path: ['/auth']}));
+  }).unless({path: ['/auth', '/users/']}));
 
 
 
