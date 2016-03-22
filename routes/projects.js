@@ -3,7 +3,7 @@ var router = express.Router();
 var knex = require('../db/knex');
 
 
-//GET ALL COMPANIES
+//GET ALL PROJECTS
 router.get('/', function(req, res, next) {
 
 	knex('projects').select().then(function(data){
@@ -15,6 +15,34 @@ router.get('/', function(req, res, next) {
 
 });
 
+
+//GET ALL PROJECTS OF A USER
+router.get('/userProjects', function(req, res, next) {
+
+	//Leave if we don't have a token
+	if(!req.user.id){
+		next();
+	}
+
+	var userId = req.user.id;
+
+	//knex('users').select().where('id', userId)
+//.where('users.id', userId)
+
+	knex('projects')
+	.join('userproject', 'projects.id', '=', 'userproject.project_id')
+	.join('users', userId, '=', 'userproject.user_id')
+	.select('projects.*')
+	
+	
+	.then(function(response){
+		res.send(response)
+	}).catch(function(err){
+		console.log("ERROR: ", err);
+	})
+
+
+});
 
 //GET INDIVIDUAL COMPANY
 router.get('/:id', function(req,res,next){
@@ -31,8 +59,12 @@ router.get('/:id', function(req,res,next){
 
 
 
-//CREATE PROJECT
+//CREATE PROJECT BASED ON TOKEN
 router.post('/', function(req,res,next){
+
+	if(!req.user.id){
+		next();
+	}
 
     //id
 	var project_name = req.body.project_name;
@@ -41,35 +73,43 @@ router.post('/', function(req,res,next){
 	var scrum_master_id = req.body.scrum_master_id;
 	var company_id = req.body.company_id;
 	var image_url = req.body.image_url;
-
-	//TODO: gulp down to a minified version
 	var project_html = req.body.project_html;
-
 	var project_css = req.body.project_css;
-
 	var project_js = req.body.project_js;
-
-
-	
 
 
 	//Validate on server side
 
+	var userId = parseInt(req.user.id);
+	console.log("USERID: ", userId)
 
 	//Insert into database w/promise
 	knex('projects').insert({
-
+		
 		project_name: project_name,
-
 		image_url : image_url,
-	
-	}).then(function(countInserted){
 
-		res.send('Added new entry: ', countInserted);
+	}).returning('id') //return our info
+	.then(function(newProjectID){
+		
+		console.log('New id: ', newProjectID[0] )
+		
+		//Next insert our project 
+		knex('userproject').insert({
+		
+			user_id: userId,
+			project_id: newProjectID[0]
+		
+		}).then(function(){
+			console.log('-----ADDED JOIN TABLE ENTRY-----')	
+			//Everything was good, let client know
+			res.send('New Project Created Successfully');
+		
+		})
 	
 	}).catch(function(err){
-	
-		res.send('There was an error posting to the server.');
+		//ERROR so send a message back to client
+		next();
 	
 	});
 
