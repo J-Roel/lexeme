@@ -14,12 +14,12 @@ exports.seed = function(knex, Promise) {
     knex('users').insert(
         {
             //id
-            username: 'John',
-            password: 'password',
-            first_name: 'John',
-            last_name: 'Doe',
-            email: 'john.doe@email.com',
-            image_url: 'http://www.uni-regensburg.de/Fakultaeten/phil_Fak_II/Psychologie/Psy_II/beautycheck/english/durchschnittsgesichter/m(01-32)_gr.jpg',
+            username: 'ted',
+            password: 'winter',
+            first_name: 'Bill',
+            last_name: 'Murray',
+            email: 'bill.murray@email.com',
+            image_url: 'http://fillmurray.com/100/100',
             company_id: 1,
             role: 'Owner',
             auth_role: 'author'
@@ -33,7 +33,7 @@ exports.seed = function(knex, Promise) {
             first_name: 'Sam',
             last_name: 'TheDog',
             email: 'sam.dog@yahoo.com',
-            image_url: 'http://www.permanentmakeup-london.co.uk/images/diffeyebrows/perfect-shaped-brows-for-this-face-yours-will-be-created-to-suit-you.jpg',
+            image_url: 'http://fillmurray.com/100/100',
             company_id: 1,
             role: 'Project Manager',
             auth_role: 'author',
@@ -58,34 +58,34 @@ exports.seed = function(knex, Promise) {
 
     //-------PROJECTS
 
-    knex('projects').insert(
-        {
-            //id
-            project_name: 'Hello World Project',
-            image_url: '',
-            project_created_date: '1/1/16',
-            project_owner_id: 1,
-            scrum_master_id: 2,
-            company_id: 1,
-            project_html: '<h1>Hello World!</h1>',
-            project_css: 'h1{background:black;color:white;}',
-            project_js: ''
-        }
-    ),
-    knex('projects').insert(
-        {
-            //id
-            project_name: 'Another Project',
-            image_url: '',
-            project_created_date: '3/5/16',
-            project_owner_id: 2,
-            scrum_master_id: 0,
-            company_id: 2,
-            project_html: '<h2>Our Test Project!</h2><div class="test"><h1>TESTING</h1></div>',
-            project_css: '.test{background:blue;color:green;}',
-            project_js: ''
-        }
-    ),
+    // knex('projects').insert(
+    //     {
+    //         //id
+    //         project_name: 'Hello World Project',
+    //         image_url: '',
+    //         //timestamps
+    //         project_owner_id: 1,
+    //         scrum_master_id: 2,
+    //         company_id: 1,
+    //         project_html: '<h1>Hello World!</h1>',
+    //         project_css: 'h1{background:black;color:white;}',
+    //         project_js: ''
+    //     }
+    // ),
+    // knex('projects').insert(
+    //     {
+    //         //id
+    //         project_name: 'Another Project',
+    //         image_url: '',
+    //         //timestamps
+    //         project_owner_id: 2,
+    //         scrum_master_id: 0,
+    //         company_id: 2,
+    //         project_html: '<h2>Our Test Project!</h2><div class="test"><h1>TESTING</h1></div>',
+    //         project_css: '.test{background:blue;color:green;}',
+    //         project_js: ''
+    //     }
+    // ),
     
    
    
@@ -104,7 +104,108 @@ exports.seed = function(knex, Promise) {
             company_name: 'Lucy\'s Company',
             image_url: 'http://brandongaille.com/wp-content/uploads/2013/07/IBM-Company-Logo.jpg'
         }
+    ),
+
+
+    //--------User Project JOIN
+    knex('userproject').insert(
+        {
+            //id - 1
+            user_id: 1,
+            project_id: 1
+        }
+    ),
+
+    //--------User Company JOIN
+    knex('usercompany').insert(
+        {
+            //id - 1
+            user_id: 1,
+            company_id: 1
+        }
+    ),
+
+    //-------TRACKER
+    knex('tracker').insert(
+        {
+            //id - 1
+            project_id: 1,
+            title: 'User has landing page',
+            description: 'Allow users to have an introduction page for website',
+            status: 'Started'
+            
+        }
+    ),
+    knex('tracker').insert(
+        {
+            //id - 1
+            project_id: 1,
+            title: 'User can upload pictures',
+            description: 'Allow user to add an url or click to upload a picture',
+            status: 'Not Started'
+            
+        }
+    ),
+    knex('tracker').insert(
+        {
+            //id - 1
+            project_id: 1,
+            title: 'User can update profile',
+            description: 'allow user to update their settings, profile and companies they are associated with',
+            status: 'Not Started'
+            
+        }
+    ),
+
+
+    //-----------NOTES
+    knex('notes').insert(
+        {
+            //id - 1
+            project_id: 1,
+            user_id: 1,
+            text: 'I think the header needs a different color'
+            
+        }
+    ),
+    knex('notes').insert(
+        {
+            //id - 1
+            project_id: 1,
+            user_id: 1,
+            text: 'Can I get that in cornflower blue?'
+            
+        }
+    ),
+    knex('notes').insert(
+        {
+            //id - 1
+            project_id: 1,
+            user_id: 2,
+            text: 'What font are you using?'
+            
+        }
+    ),
+     knex('notes').insert(
+        {
+            //id - 1
+            project_id: 2,
+            user_id: 2,
+            text: 'Hero image needs to be bigger.'
+            
+        }
     )
+
+
+
+
+
+
+
+
+
+
+
 
     );
 };

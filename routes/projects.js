@@ -20,22 +20,21 @@ router.get('/', function(req, res, next) {
 router.get('/userProjects', function(req, res, next) {
 
 	//Leave if we don't have a token
-	if(!req.user.id){
-		next();
-	}
+	// if(!req.user.id){
+	// 	next();
+	// }
 
 	var userId = req.user.id;
 
-	//knex('users').select().where('id', userId)
-//.where('users.id', userId)
-
-	knex('projects')
-	.join('userproject', 'projects.id', '=', 'userproject.project_id')
-	.join('users', userId, '=', 'userproject.user_id')
+	knex('users')
+	.join('userproject', userId, '=', 'userproject.user_id')
+	.join('projects', 'projects.id', '=', 'userproject.project_id')
+	.where('users.id', userId)
 	.select('projects.*')
-	
-	
+
+
 	.then(function(response){
+		//console.log(response);
 		res.send(response)
 	}).catch(function(err){
 		console.log("ERROR: ", err);
@@ -44,7 +43,13 @@ router.get('/userProjects', function(req, res, next) {
 
 });
 
-//GET INDIVIDUAL COMPANY
+
+
+
+
+
+
+//GET INDIVIDUAL PROJECT BY ID
 router.get('/:id', function(req,res,next){
 
 	knex('projects').select().where('id', req.params.id)
@@ -115,6 +120,26 @@ router.post('/', function(req,res,next){
 
 
 });
+
+
+
+//--------------------------NOTES FOR PROJECTS
+
+
+//GET ALL NOTES
+router.get('/notes', function(req, res, next) {
+
+	knex('notes').select().where('user_id', req.user.id )
+	.then(function(data){
+		console.log(data);
+		res.send(data);
+	}).catch(function(err){
+		console.log("Error: ", err);
+		res.send('There was an error on the server.');
+	});
+
+});
+
 
 
 

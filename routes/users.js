@@ -13,16 +13,16 @@ var bcrypt = require('bcrypt');
 //---------------------------------
 
 //GET ALL USERS
-router.get('/', function(req, res, next) {
+// router.get('/', function(req, res, next) {
 
-	knex('users').select().then(function(data){
-		res.send(data);
-	}).catch(function(err){
-		console.log("Error: ", err);
-		res.send('There was an error on the server.');
-	});
+// 	knex('users').select().then(function(data){
+// 		res.send(data);
+// 	}).catch(function(err){
+// 		console.log("Error: ", err);
+// 		res.send('There was an error on the server.');
+// 	});
 
-});
+// });
 
 
 //GET INDIVIDUAL USER BY ID
@@ -41,7 +41,6 @@ router.get('/:id', function(req,res,next){
 
 //GET INDIVIDUAL USER BY TOKEN
 router.get('/userByToken', function(req,res,next){
-	console.log('HELLO!!!!');
 
 	//Jump ship if we don't have any info
 	//this route is jwt protected, but
@@ -54,7 +53,7 @@ router.get('/userByToken', function(req,res,next){
 
 	knex('users').select().where('id', userId)
 	.then(function(data){
-		console.log('USER FROM API: ', data);
+		//console.log('USER FROM API: ', data);
 		res.send(data);
 
 	}).catch(function(err){
@@ -70,8 +69,6 @@ router.get('/userByToken', function(req,res,next){
 //CREATE USER
 router.post('/', function(req,res,next){
 
-
-	console.log("USER: ", req.body);
 
     //id
 	var username = req.body.username;

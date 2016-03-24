@@ -1,4 +1,4 @@
-
+ 
 exports.up = function(knex, Promise) {
   return Promise.all([
 
@@ -19,7 +19,7 @@ exports.up = function(knex, Promise) {
             table.increments('id');
             table.string('project_name');
             table.string('image_url');
-            table.date('project_created_date');
+            table.timestamps();
             table.integer('project_owner_id');
             table.integer('scrum_master_id');
             table.integer('company_id');
@@ -37,9 +37,9 @@ exports.up = function(knex, Promise) {
          knex.schema.createTable('tracker', function(table){
             table.increments('id');
             table.integer('project_id');
-            table.date('start_date');
-            table.date('end_date');
-            table.text('text');
+            table.timestamps();
+            table.string('title');
+            table.string('description');
             table.string('status', 20);
         }),
 
@@ -53,7 +53,14 @@ exports.up = function(knex, Promise) {
             table.increments('id');
             table.integer('user_id');
             table.string('company_id');
+        }),
+        knex.schema.createTable('notes', function(table){
+            table.increments('id');
+            table.integer('project_id');
+            table.integer('user_id');
+            table.string('text');
         })
+
 
     ]);
 };
@@ -65,6 +72,7 @@ exports.down = function(knex, Promise) {
       knex.schema.dropTable('companies'),
        knex.schema.dropTable('tracker'),
       knex.schema.dropTable('userproject'),
-      knex.schema.dropTable('usercompany')
+      knex.schema.dropTable('usercompany'),
+      knex.schema.dropTable('notes')
   ])
 };

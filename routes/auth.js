@@ -56,7 +56,7 @@ router.post('/', function (req, res) {
 			
 			console.log('Sending 401 to Client');
 		    res.send(401, 'Username was not found');
-			next();
+			//next();
 
 		});//END PROMISE
 	} else { res.send(401, 'Username was not recieved'); }
@@ -68,7 +68,6 @@ router.post('/', function (req, res) {
 
 router.get('/restricted', function (req, res) {
   	console.log('IN RESTRICTED');
-
 
 	console.log('user ' + req.user.username + ' is calling /restricted');
 
