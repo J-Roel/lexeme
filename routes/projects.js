@@ -73,11 +73,10 @@ router.post('/', function(req,res,next){
 
     //id
 	var project_name = req.body.project_name;
-	var project_created_date = getDate(); //get the current date
+	var image_url = req.body.image_url;
 	var project_owner_id = req.body.project_owner_id;
 	var scrum_master_id = req.body.scrum_master_id;
 	var company_id = req.body.company_id;
-	var image_url = req.body.image_url;
 	var project_html = req.body.project_html;
 	var project_css = req.body.project_css;
 	var project_js = req.body.project_js;
@@ -93,6 +92,12 @@ router.post('/', function(req,res,next){
 		
 		project_name: project_name,
 		image_url : image_url,
+		project_owner_id: project_owner_id,
+		scrum_master_id: scrum_master_id,
+		company_id: company_id,
+		project_html: project_html,
+		project_css: project_css,
+		project_js:  project_js
 
 	}).returning('id') //return our info
 	.then(function(newProjectID){

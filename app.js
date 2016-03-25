@@ -14,6 +14,7 @@ var jwt = require('jsonwebtoken');
 //var routes = require('./routes/index');
 var users = require('./routes/users');
 var companies = require('./routes/companies');
+var tracker = require('./routes/tracker');
 var projects = require('./routes/projects');
 var auth = require('./routes/auth');
 
@@ -51,6 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/', routes);
 app.use('/users', users);
 app.use('/companies', companies);
+app.use('/tracker', tracker);
 app.use('/projects', projects);
 app.use('/auth', auth);
 
