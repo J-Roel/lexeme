@@ -36,6 +36,7 @@ exports.up = function(knex, Promise) {
 
          knex.schema.createTable('tracker', function(table){
             table.increments('id');
+            table.integer('list_id');
             table.integer('project_id');
             table.string('project_name');
             table.integer('user_id');

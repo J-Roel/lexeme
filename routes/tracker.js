@@ -7,9 +7,8 @@ var knex = require('../db/knex');
 //CREATE TRACKER
 router.post('/', function(req,res,next){
 
-  	console.log('In POST /tracker/  -> ', req.body);
-
-		var list_id = req.body.newListNum;
+  	//console.log('In POST /tracker/  -> ', req.body);
+		var list_id = req.body.list_id;
         var project_id = req.body.project_id;
         var project_name = req.body.project_name;
         var user_id = req.body.user_id;
