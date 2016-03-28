@@ -5,8 +5,9 @@ var knex = require('../db/knex');
 
 //GET ALL PROJECTS
 router.get('/', function(req, res, next) {
+	
 
-	knex('projects').select().then(function(data){
+	knex('projects').select().where('id',req.body.id).then(function(data){
 		res.send(data);
 	}).catch(function(err){
 		console.log("Error: ", err);
@@ -42,8 +43,6 @@ router.get('/userProjects', function(req, res, next) {
 
 
 });
-
-
 
 
 
@@ -85,6 +84,7 @@ router.post('/', function(req,res,next){
 	//Validate on server side
 
 	var userId = parseInt(req.user.id);
+	var newId;
 	console.log("USERID: ", userId)
 
 	//Insert into database w/promise
@@ -103,7 +103,7 @@ router.post('/', function(req,res,next){
 	.then(function(newProjectID){
 		
 		console.log('New id: ', newProjectID[0] )
-		
+		newId = newProjectID[0];
 		//Next insert our project 
 		knex('userproject').insert({
 		
@@ -113,7 +113,7 @@ router.post('/', function(req,res,next){
 		}).then(function(){
 			console.log('-----ADDED JOIN TABLE ENTRY-----')	
 			//Everything was good, let client know
-			res.send('New Project Created Successfully');
+			res.send("We have created a new project");
 		
 		})
 	
@@ -125,6 +125,50 @@ router.post('/', function(req,res,next){
 
 
 });
+
+
+//UPDATE PROJECT
+router.put('/:id', function(req,res,next){
+
+	var thisId = req.params.id;
+
+  	console.log('In PUT /projects/  -> ', req.body);
+        var project_html = req.body.project_html;
+
+
+
+	//Insert into database w/promise
+	knex('projects')
+		.where('id', thisId)
+		.update({
+     		//timestamps is automatic
+        	project_html: project_html
+	}).then(function(countInserted){
+		console.log("Successfully Updated project.");
+		res.send('Updated: ', countInserted);
+	
+	}).catch(function(err){
+
+		console.log('There was an error updating tracker.');
+		console.log('------------------------------------------');
+		console.log('\t\tERROR');
+		console.log('-------------------------------------start');
+		console.log(err);
+		console.log('---------------------------------------end');
+
+
+
+		res.send('There was an error posting to the server.');
+	
+	});
+
+
+});
+
+
+
+
+
 
 
 
@@ -146,6 +190,20 @@ router.get('/notes', function(req, res, next) {
 });
 
 
+
+//DELETE USER
+router.delete('/:id', function(req,res,next){
+	console.log("Server - Removing Project: ", req.params.id);
+
+	knex('projects').where('id', req.params.id).del()
+	.then(function(id){
+		res.send('Successfully deleted.');
+
+	}).catch(function(err){
+		next();
+	});
+
+});
 
 
 
