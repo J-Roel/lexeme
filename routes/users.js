@@ -106,7 +106,7 @@ router.post('/', function(req,res,next){
 			
 			}).catch(function(err){
 			
-				res.send('There was an error posting to the server.');
+				res.json(err);
 			
 			});//End Promise
 
