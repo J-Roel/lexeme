@@ -29,14 +29,8 @@ var app = express();
 
 
 //Tell our app to use cors
-app.use(cors(corsOptions));
+//app.use(cors(corsOptions));
 
-app.use(function(req,res,next){
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-
-});
 
 
 // We are going to protect /api routes with JWT
@@ -61,12 +55,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use(function(req,res,next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+
+});
+
 //app.use('/', routes);
 app.use('/users', users);
 app.use('/companies', companies);
 app.use('/tracker', tracker);
 app.use('/projects', projects);
 app.use('/auth', auth);
+
 
 
 
