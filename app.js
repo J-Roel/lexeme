@@ -20,12 +20,16 @@ var auth = require('./routes/auth');
 
 var cors = require('cors');
 
+var corsOptions = {
+  origin: '*'
+};
+
 
 var app = express();
 
 
 //Tell our app to use cors
-app.use(cors());
+app.use(cors(corsOptions));
 
 // We are going to protect /api routes with JWT
 app.use('/', expressJwt(
